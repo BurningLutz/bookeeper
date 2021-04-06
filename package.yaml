@@ -1,0 +1,71 @@
+name: bookeeper
+version: 0.1.0
+synopsis: bookeeper
+maintainer: BurningLutz <lutz.l.burning@gmail.com>
+
+ghc-options:
+  - -Wall
+  - -Wno-type-defaults
+  - -threaded
+ghc-prof-options:
+  - -fprof-auto-calls
+default-extensions:
+  - AllowAmbiguousTypes
+  - ApplicativeDo
+  - BangPatterns
+  - BlockArguments
+  - ConstraintKinds
+  - DataKinds
+  - DeriveAnyClass
+  - DeriveFunctor
+  - DeriveGeneric
+  - DerivingStrategies
+  - DerivingVia
+  - ExplicitForAll
+  - FlexibleContexts
+  - FlexibleInstances
+  - FunctionalDependencies
+  - GADTs
+  - InstanceSigs
+  - KindSignatures
+  - LambdaCase
+  - LiberalTypeSynonyms
+  - MonoLocalBinds
+  - MultiParamTypeClasses
+  - NamedFieldPuns
+  - NamedWildCards
+  - NoImplicitPrelude
+  - NumericUnderscores
+  - OverloadedLists
+  - OverloadedStrings
+  - PartialTypeSignatures
+  - PolyKinds
+  - QuasiQuotes
+  - RecordWildCards
+  - RankNTypes
+  - ScopedTypeVariables
+  - StandaloneDeriving
+  - TemplateHaskell
+  - TypeApplications
+  - TypeFamilies
+  - TypeOperators
+  - TypeSynonymInstances
+  - UndecidableInstances
+  - UndecidableSuperClasses
+
+dependencies:
+  - base >= 4.9 && < 5
+  - protolude
+  - aeson
+  - mtl
+  - servant-server
+  - vector
+  - warp
+
+library:
+  source-dirs: ./src
+
+executables:
+  bookeeper:
+    main: Main.hs
+    source-dirs: ./app

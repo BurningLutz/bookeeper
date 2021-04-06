@@ -1,0 +1,132 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.34.4.
+--
+-- see: https://github.com/sol/hpack
+
+name:           bookeeper
+version:        0.1.0
+synopsis:       bookeeper
+maintainer:     BurningLutz <lutz.l.burning@gmail.com>
+build-type:     Simple
+
+library
+  other-modules:
+      Paths_bookeeper
+  hs-source-dirs:
+      ./src
+  default-extensions:
+      AllowAmbiguousTypes
+      ApplicativeDo
+      BangPatterns
+      BlockArguments
+      ConstraintKinds
+      DataKinds
+      DeriveAnyClass
+      DeriveFunctor
+      DeriveGeneric
+      DerivingStrategies
+      DerivingVia
+      ExplicitForAll
+      FlexibleContexts
+      FlexibleInstances
+      FunctionalDependencies
+      GADTs
+      InstanceSigs
+      KindSignatures
+      LambdaCase
+      LiberalTypeSynonyms
+      MonoLocalBinds
+      MultiParamTypeClasses
+      NamedFieldPuns
+      NamedWildCards
+      NoImplicitPrelude
+      NumericUnderscores
+      OverloadedLists
+      OverloadedStrings
+      PartialTypeSignatures
+      PolyKinds
+      QuasiQuotes
+      RecordWildCards
+      RankNTypes
+      ScopedTypeVariables
+      StandaloneDeriving
+      TemplateHaskell
+      TypeApplications
+      TypeFamilies
+      TypeOperators
+      TypeSynonymInstances
+      UndecidableInstances
+      UndecidableSuperClasses
+  ghc-options: -Wall -Wno-type-defaults -threaded
+  ghc-prof-options: -fprof-auto-calls
+  build-depends:
+      aeson
+    , base >=4.9 && <5
+    , mtl
+    , protolude
+    , servant-server
+    , vector
+    , warp
+  default-language: Haskell2010
+
+executable bookeeper
+  main-is: Main.hs
+  other-modules:
+      Paths_bookeeper
+  hs-source-dirs:
+      ./app
+  default-extensions:
+      AllowAmbiguousTypes
+      ApplicativeDo
+      BangPatterns
+      BlockArguments
+      ConstraintKinds
+      DataKinds
+      DeriveAnyClass
+      DeriveFunctor
+      DeriveGeneric
+      DerivingStrategies
+      DerivingVia
+      ExplicitForAll
+      FlexibleContexts
+      FlexibleInstances
+      FunctionalDependencies
+      GADTs
+      InstanceSigs
+      KindSignatures
+      LambdaCase
+      LiberalTypeSynonyms
+      MonoLocalBinds
+      MultiParamTypeClasses
+      NamedFieldPuns
+      NamedWildCards
+      NoImplicitPrelude
+      NumericUnderscores
+      OverloadedLists
+      OverloadedStrings
+      PartialTypeSignatures
+      PolyKinds
+      QuasiQuotes
+      RecordWildCards
+      RankNTypes
+      ScopedTypeVariables
+      StandaloneDeriving
+      TemplateHaskell
+      TypeApplications
+      TypeFamilies
+      TypeOperators
+      TypeSynonymInstances
+      UndecidableInstances
+      UndecidableSuperClasses
+  ghc-options: -Wall -Wno-type-defaults -threaded
+  ghc-prof-options: -fprof-auto-calls
+  build-depends:
+      aeson
+    , base >=4.9 && <5
+    , mtl
+    , protolude
+    , servant-server
+    , vector
+    , warp
+  default-language: Haskell2010
