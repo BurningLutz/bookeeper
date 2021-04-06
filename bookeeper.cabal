@@ -11,6 +11,11 @@ maintainer:     BurningLutz <lutz.l.burning@gmail.com>
 build-type:     Simple
 
 library
+  exposed-modules:
+      Bookeeper.API
+      Bookeeper.AppM
+      Bookeeper.Model
+      Bookeeper.Util
   other-modules:
       Paths_bookeeper
   hs-source-dirs:
@@ -27,6 +32,7 @@ library
       DeriveGeneric
       DerivingStrategies
       DerivingVia
+      DuplicateRecordFields
       ExplicitForAll
       FlexibleContexts
       FlexibleInstances
@@ -58,14 +64,16 @@ library
       TypeSynonymInstances
       UndecidableInstances
       UndecidableSuperClasses
-  ghc-options: -Wall -Wno-type-defaults -threaded
+  ghc-options: -Wall -Wno-type-defaults
   ghc-prof-options: -fprof-auto-calls
   build-depends:
       aeson
     , base >=4.9 && <5
+    , lens
     , mtl
     , protolude
     , servant-server
+    , time
     , vector
     , warp
   default-language: Haskell2010
@@ -88,6 +96,7 @@ executable bookeeper
       DeriveGeneric
       DerivingStrategies
       DerivingVia
+      DuplicateRecordFields
       ExplicitForAll
       FlexibleContexts
       FlexibleInstances
@@ -124,9 +133,12 @@ executable bookeeper
   build-depends:
       aeson
     , base >=4.9 && <5
+    , bookeeper
+    , lens
     , mtl
     , protolude
     , servant-server
+    , time
     , vector
     , warp
   default-language: Haskell2010

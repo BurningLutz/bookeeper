@@ -6,7 +6,6 @@ maintainer: BurningLutz <lutz.l.burning@gmail.com>
 ghc-options:
   - -Wall
   - -Wno-type-defaults
-  - -threaded
 ghc-prof-options:
   - -fprof-auto-calls
 default-extensions:
@@ -21,6 +20,7 @@ default-extensions:
   - DeriveGeneric
   - DerivingStrategies
   - DerivingVia
+  - DuplicateRecordFields
   - ExplicitForAll
   - FlexibleContexts
   - FlexibleInstances
@@ -57,8 +57,10 @@ dependencies:
   - base >= 4.9 && < 5
   - protolude
   - aeson
+  - lens
   - mtl
   - servant-server
+  - time
   - vector
   - warp
 
@@ -67,5 +69,9 @@ library:
 
 executables:
   bookeeper:
+    ghc-options:
+      - -threaded
     main: Main.hs
     source-dirs: ./app
+    dependencies:
+      - bookeeper
