@@ -50,7 +50,6 @@ library
       NamedWildCards
       NoImplicitPrelude
       NumericUnderscores
-      OverloadedLists
       OverloadedStrings
       PartialTypeSignatures
       PolyKinds
@@ -114,7 +113,6 @@ executable bookeeper
       NamedWildCards
       NoImplicitPrelude
       NumericUnderscores
-      OverloadedLists
       OverloadedStrings
       PartialTypeSignatures
       PolyKinds

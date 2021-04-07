@@ -5,7 +5,7 @@ module Bookeeper.Server.User
 
 import Protolude
 import Servant
-import Data.Vector
+import Data.Vector as V
 
 import Bookeeper.AppM
 import Bookeeper.API
@@ -19,7 +19,7 @@ userServer = getUsers
   where
     getUsers :: AppM (Vector User)
     getUsers = do
-      pure []
+      pure V.empty
 
     addUser :: AddUser -> AppM NoContent
     addUser _ = do
