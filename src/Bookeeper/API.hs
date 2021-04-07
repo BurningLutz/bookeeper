@@ -1,5 +1,7 @@
 module Bookeeper.API
-  ( UserAPI
+  ( FullAPI
+  , UserAPI
+  , BookAPI
   ) where
 
 
@@ -11,4 +13,13 @@ import Data.Vector
 import Bookeeper.Model
 
 
-type UserAPI = "users" :> ( Get '[JSON] (Vector User) :<|> Post '[JSON] Bool)
+type FullAPI = UserAPI :<|> BookAPI
+
+
+type UserAPI = "users" :> (    Get '[JSON] (Vector User)
+                          :<|> ReqBody '[JSON] AddUser :> PostNoContent
+                          )
+
+type BookAPI = "books" :> (    Get '[JSON] (Vector Book)
+                          :<|> Capture "id" Word64 :> DeleteNoContent
+                          )

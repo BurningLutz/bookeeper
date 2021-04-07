@@ -2,24 +2,19 @@ module Main where
 
 
 import Protolude hiding (Handler)
-
 import Servant
-import Data.Vector
-import Control.Monad.RWS
 import Network.Wai.Handler.Warp
 
+import Bookeeper.API
 import Bookeeper.AppM
+import Bookeeper.Server
 
 
-type UserAPI = "users" :> Get '[JSON] (Vector Text)
-
-server :: ServerT UserAPI AppM
-server = do
-  tell ["g"]
-  pure ["f", "g"]
+appServer :: Server FullAPI
+appServer = hoistServer (Proxy @FullAPI) runAppM server
 
 app :: Application
-app = serve @UserAPI Proxy (hoistServer @UserAPI Proxy runAppM server)
+app = serve (Proxy @FullAPI) appServer
 
 main :: IO ()
 main = run 8081 app
