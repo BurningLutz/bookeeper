@@ -14,7 +14,7 @@ import Bookeeper.Model
 
 userServer :: ServerT UserAPI AppM
 userServer = getUsers
-    :<|> addUser
+        :<|> addUser
 
   where
     getUsers :: AppM (Vector User)

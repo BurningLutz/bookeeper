@@ -58,7 +58,11 @@ dependencies:
   - aeson
   - lens
   - mtl
+  - opaleye
+  - product-profunctors
+  - servant-auth-server
   - servant-server
+  - text
   - time
   - vector
   - warp

@@ -7,8 +7,8 @@ module Bookeeper.API
 
 import Protolude
 
-import Servant
 import Data.Vector
+import Servant
 
 import Bookeeper.Model
 
@@ -16,10 +16,13 @@ import Bookeeper.Model
 type FullAPI = UserAPI :<|> BookAPI
 
 
-type UserAPI = "users" :> (    Get '[JSON] (Vector User)
-                          :<|> ReqBody '[JSON] AddUser :> PostNoContent
-                          )
+type UserAPI = "users"
+            :> ( Get '[JSON] (Vector User)
+            :<|> ReqBody '[JSON] AddUser :> PostNoContent
+               )
 
-type BookAPI = "books" :> (    Get '[JSON] (Vector Book)
-                          :<|> Capture "id" Word64 :> DeleteNoContent
-                          )
+
+type BookAPI = "books"
+            :> ( Get '[JSON] (Vector Book)
+            :<|> Capture "id" Word64 :> DeleteNoContent
+               )

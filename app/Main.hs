@@ -1,7 +1,7 @@
 module Main where
 
 
-import Protolude hiding (Handler)
+import Protolude
 import Servant
 import Network.Wai.Handler.Warp
 

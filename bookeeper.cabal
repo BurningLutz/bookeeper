@@ -72,8 +72,12 @@ library
     , base >=4.9 && <5
     , lens
     , mtl
+    , opaleye
+    , product-profunctors
     , protolude
+    , servant-auth-server
     , servant-server
+    , text
     , time
     , vector
     , warp
@@ -136,8 +140,12 @@ executable bookeeper
     , bookeeper
     , lens
     , mtl
+    , opaleye
+    , product-profunctors
     , protolude
+    , servant-auth-server
     , servant-server
+    , text
     , time
     , vector
     , warp
