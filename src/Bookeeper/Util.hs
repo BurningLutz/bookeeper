@@ -9,4 +9,6 @@ import Data.Aeson
 
 
 jsonOptions :: Options
-jsonOptions = defaultOptions { fieldLabelModifier = dropWhile (== '_'), constructorTagModifier = map toLower }
+jsonOptions = defaultOptions { fieldLabelModifier     = dropWhile (== '_')
+                             , constructorTagModifier = map toLower
+                             }

@@ -56,7 +56,7 @@ dependencies:
   - base >= 4.9 && < 5
   - protolude
   - aeson
-  - lens
+  - base64-bytestring
   - mtl
   - opaleye
   - product-profunctors

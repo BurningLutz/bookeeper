@@ -10,8 +10,10 @@ import Servant
 import Data.Vector hiding (forM_)
 import Control.Monad.RWS hiding (forM_)
 
+import Bookeeper.APIModel
 
-type AppM' = RWST Text (Vector Text) () Handler
+
+type AppM' = RWST Env (Vector Text) () Handler
 
 newtype AppM a = AppM { unAppM :: AppM' a }
   deriving ( Functor
@@ -19,17 +21,17 @@ newtype AppM a = AppM { unAppM :: AppM' a }
            , Monad
            , MonadIO
            , MonadError ServerError
-           , MonadReader Text
+           , MonadReader Env
            , MonadWriter (Vector Text)
            , MonadState ()
-           , MonadRWS Text (Vector Text) ()
+           , MonadRWS Env (Vector Text) ()
            )
        via AppM'
 
 
-runAppM :: AppM a -> Handler a
-runAppM appM = do
-  (a, _, w) <- runRWST (unAppM appM) "" ()
+runAppM :: Env -> AppM a -> Handler a
+runAppM env appM = do
+  (a, _, w) <- runRWST (unAppM appM) env ()
 
   forM_ w putStrLn
 
