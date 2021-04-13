@@ -10,7 +10,7 @@ import Servant
 import Data.Vector hiding (forM_)
 import Control.Monad.RWS hiding (forM_)
 
-import Bookeeper.APIModel
+import Bookeeper.Util
 
 
 type AppM' = RWST Env (Vector Text) () Handler

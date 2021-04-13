@@ -12,6 +12,8 @@ import Data.Vector
 import Servant
 import Servant.Auth.Server
 
+import Bookeeper.Util
+import Bookeeper.DBModel
 import Bookeeper.APIModel
 
 
@@ -36,7 +38,7 @@ type BookAPI = "books"
 type RPCAPI = "rpc"
            :> ( "admin-login"
                   :> ReqBody '[JSON] AdminLogin
-                  :> Post '[JSON] (WithAccessToken Admin)
+                  :> Post '[JSON] (WithAccessToken ClaimAdmin)
            :<|> "user-login"
                   :> ReqBody '[JSON] AddUser
                   :> Post '[JSON] (WithAccessToken User)

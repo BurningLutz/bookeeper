@@ -15,6 +15,12 @@ library
       Bookeeper.API
       Bookeeper.APIModel
       Bookeeper.AppM
+      Bookeeper.DBModel
+      Bookeeper.DBModel.Admin
+      Bookeeper.DBModel.Book
+      Bookeeper.DBModel.Borrowing
+      Bookeeper.DBModel.Entity
+      Bookeeper.DBModel.User
       Bookeeper.Server
       Bookeeper.Server.RPC
       Bookeeper.Server.User
@@ -74,7 +80,9 @@ library
     , base64-bytestring
     , mtl
     , opaleye
+    , postgresql-simple
     , product-profunctors
+    , profunctors
     , protolude
     , servant-auth-server
     , servant-server
@@ -142,7 +150,9 @@ executable bookeeper
     , bookeeper
     , mtl
     , opaleye
+    , postgresql-simple
     , product-profunctors
+    , profunctors
     , protolude
     , servant-auth-server
     , servant-server

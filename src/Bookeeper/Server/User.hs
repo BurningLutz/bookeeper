@@ -11,6 +11,8 @@ import Data.Vector as V
 import Bookeeper.AppM
 import Bookeeper.API
 import Bookeeper.APIModel
+import Bookeeper.DBModel
+import Bookeeper.Util
 
 
 userServer :: ServerT UserAPI AppM

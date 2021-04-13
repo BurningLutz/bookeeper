@@ -9,7 +9,7 @@ import Network.Wai.Handler.Warp
 import Bookeeper.API
 import Bookeeper.AppM
 import Bookeeper.Server
-import Bookeeper.APIModel
+import Bookeeper.Util
 
 
 type ContextSet = '[CookieSettings, JWTSettings]

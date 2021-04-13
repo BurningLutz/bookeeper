@@ -11,13 +11,16 @@ import Data.Text.Lazy.Encoding
 import Bookeeper.AppM
 import Bookeeper.API
 import Bookeeper.APIModel
+import Bookeeper.DBModel
+import Bookeeper.Util
 
 
 rpcServer :: ServerT RPCAPI AppM
 rpcServer = adminLogin
+       :<|> userLogin
 
   where
-    adminLogin :: AdminLogin -> AppM (WithAccessToken Admin)
+    adminLogin :: AdminLogin -> AppM (WithAccessToken ClaimAdmin)
     adminLogin AdminLogin { nickname, password } = do
       unless (nickname == "Lutz" && password == "123456")
              (throwError err401)
@@ -39,8 +42,10 @@ rpcServer = adminLogin
             WithAccessToken
               { access_token = toStrict $ decodeUtf8 jwt
               , payload =
-                  Admin
+                  ClaimAdmin
                     { nickname
                     , level = High
                     }
               }
+
+    userLogin = undefined

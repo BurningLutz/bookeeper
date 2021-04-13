@@ -59,7 +59,9 @@ dependencies:
   - base64-bytestring
   - mtl
   - opaleye
+  - postgresql-simple
   - product-profunctors
+  - profunctors
   - servant-auth-server
   - servant-server
   - text
