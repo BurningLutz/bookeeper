@@ -1,6 +1,8 @@
 module Bookeeper.APIModel
-  ( AddUser(..)
-  , AdminLogin(..)
+  ( AdminLogin(..)
+  , UserLogin(..)
+  , AddUser(..)
+  , UpdUser(..)
   ) where
 
 
@@ -8,16 +10,30 @@ import Protolude
 
 import Data.Aeson.TH
 
+import Bookeeper.Util
 
-data AddUser = AddUser
-  { nickname :: Text
-  , age      :: Word8
-  , isVip    :: Bool
-  }
-$(deriveJSON defaultOptions ''AddUser)
 
 data AdminLogin = AdminLogin
   { nickname :: Text
   , password :: Text
   }
-$(deriveJSON defaultOptions ''AdminLogin)
+$(deriveJSON jsonOptions ''AdminLogin)
+
+data UserLogin = UserLogin
+  { nickname :: Text
+  , password :: Text
+  }
+$(deriveJSON jsonOptions ''UserLogin)
+
+data AddUser = AddUser
+  { nickname :: Text
+  , age      :: Int32
+  , isVip    :: Bool
+  }
+$(deriveJSON jsonOptions ''AddUser)
+
+data UpdUser = UpdUser
+  { age   :: Int32
+  , isVip :: Bool
+  }
+$(deriveJSON jsonOptions ''UpdUser)

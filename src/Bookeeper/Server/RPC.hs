@@ -4,15 +4,19 @@ module Bookeeper.Server.RPC
 
 
 import Protolude hiding (decodeUtf8)
+
+import Data.Pool
+import Data.Time.Clock
+import Data.Text.Lazy.Encoding
+import Opaleye
 import Servant
 import Servant.Auth.Server
-import Data.Text.Lazy.Encoding
 
 import Bookeeper.AppM
 import Bookeeper.API
 import Bookeeper.APIModel
 import Bookeeper.DBModel
-import Bookeeper.Util
+import Bookeeper.Data
 
 
 rpcServer :: ServerT RPCAPI AppM
@@ -21,31 +25,32 @@ rpcServer = adminLogin
 
   where
     adminLogin :: AdminLogin -> AppM (WithAccessToken ClaimAdmin)
-    adminLogin AdminLogin { nickname, password } = do
-      unless (nickname == "Lutz" && password == "123456")
-             (throwError err401)
+    adminLogin AdminLogin { nickname = nickname_, password = password_ } = do
+      Env { pool, jwtSettings } <- ask
 
-      Env { jwtSettings } <- ask
+      mAdmin :: Maybe Admin <- liftIO $ withResource pool \conn -> do
+        listToMaybe <$> runSelect conn do
+          admin@Entity { entity = Admin {..} } <- selectTable admins
 
-      let
-        claimAdmin =
-          ClaimAdmin
-            { nickname
-            , level = High
+          viaLateral restrict ( nickname .== toFields nickname_
+                            .&& password .== toFields password_
+                              )
+
+          pure admin
+
+      mAdmin & maybe (throwError err401) \Entity { entity = Admin {..} } -> do
+        now <- liftIO getCurrentTime
+
+        let
+          claimAdmin = ClaimAdmin { nickname }
+          expiresAt = addUTCTime (7 * nominalDay) now
+
+        eiJwt <- liftIO $ makeJWT claimAdmin jwtSettings (Just expiresAt)
+
+        eiJwt & either (\_ -> throwError err500) \jwt -> do
+          pure WithAccessToken
+            { access_token = toStrict $ decodeUtf8 jwt
+            , payload      = claimAdmin
             }
-      eiJwt <- liftIO $ makeJWT claimAdmin jwtSettings Nothing
-
-      case eiJwt of
-        Left _ -> throwError err500
-        Right jwt -> do
-          pure $
-            WithAccessToken
-              { access_token = toStrict $ decodeUtf8 jwt
-              , payload =
-                  ClaimAdmin
-                    { nickname
-                    , level = High
-                    }
-              }
 
     userLogin = undefined

@@ -6,6 +6,8 @@ module Bookeeper.DBModel.Entity
   , pEntity
 
   , withEntity
+  , wrapEntity
+  , updEntity
   ) where
 
 
@@ -16,6 +18,8 @@ import Data.Time
 import Data.Aeson.TH
 import Data.Profunctor.Product.TH
 
+import Bookeeper.Util
+
 
 data Entity' a b c d = Entity
   { id        :: a
@@ -23,7 +27,7 @@ data Entity' a b c d = Entity
   , updatedAt :: c
   , entity    :: d
   }
-$(deriveJSON defaultOptions ''Entity')
+$(deriveJSON jsonOptions ''Entity')
 $(makeAdaptorAndInstanceInferrable' ''Entity')
 type Entity a = Entity' Int64 UTCTime UTCTime a
 type EntityR a = Entity' (Field SqlInt8)
@@ -41,4 +45,20 @@ withEntity entity = pEntity $ Entity
   , createdAt = readOnlyTableField "created_at"
   , updatedAt = tableField "updated_at"
   , entity
+  }
+
+wrapEntity :: entity -> EntityW entity
+wrapEntity entity = Entity
+  { id = ()
+  , createdAt = ()
+  , updatedAt = Nothing
+  , entity
+  }
+
+updEntity :: (entity -> entity) -> EntityR entity -> EntityW entity
+updEntity conv entity'@Entity { entity } = entity'
+  { id = ()
+  , createdAt = ()
+  , updatedAt = Nothing
+  , entity = conv entity
   }

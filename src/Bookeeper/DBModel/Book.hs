@@ -15,6 +15,7 @@ import Opaleye
 import Data.Aeson.TH
 import Data.Profunctor.Product.TH
 
+import Bookeeper.Util
 import Bookeeper.DBModel.Entity
 
 
@@ -23,7 +24,7 @@ data Book' a b c = Book
   , title  :: b
   , authur :: c
   }
-$(deriveJSON defaultOptions ''Book')
+$(deriveJSON jsonOptions ''Book')
 $(makeAdaptorAndInstanceInferrable' ''Book')
 type Book = Book' Text Text Text
 type BookF = Book' (Field SqlText)

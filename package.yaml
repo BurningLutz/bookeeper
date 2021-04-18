@@ -62,11 +62,11 @@ dependencies:
   - postgresql-simple
   - product-profunctors
   - profunctors
+  - resource-pool
   - servant-auth-server
   - servant-server
   - text
   - time
-  - vector
   - warp
 
 library:

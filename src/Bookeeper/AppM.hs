@@ -7,13 +7,12 @@ module Bookeeper.AppM
 import Protolude hiding (Handler)
 
 import Servant
-import Data.Vector hiding (forM_)
 import Control.Monad.RWS hiding (forM_)
 
-import Bookeeper.Util
+import Bookeeper.Data
 
 
-type AppM' = RWST Env (Vector Text) () Handler
+type AppM' = RWST Env [Text] () Handler
 
 newtype AppM a = AppM { unAppM :: AppM' a }
   deriving ( Functor
@@ -22,9 +21,9 @@ newtype AppM a = AppM { unAppM :: AppM' a }
            , MonadIO
            , MonadError ServerError
            , MonadReader Env
-           , MonadWriter (Vector Text)
+           , MonadWriter [Text]
            , MonadState ()
-           , MonadRWS Env (Vector Text) ()
+           , MonadRWS Env [Text] ()
            )
        via AppM'
 

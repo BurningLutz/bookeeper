@@ -2,21 +2,24 @@ module Main where
 
 
 import Protolude
+import Data.Pool
 import Servant
 import Servant.Auth.Server
 import Network.Wai.Handler.Warp
+import Database.PostgreSQL.Simple (connectPostgreSQL, close)
 
 import Bookeeper.API
 import Bookeeper.AppM
 import Bookeeper.Server
-import Bookeeper.Util
+import Bookeeper.Data
 
 
 type ContextSet = '[CookieSettings, JWTSettings]
 
 main :: IO ()
 main = do
-  key <- generateKey
+  key  <- generateKey
+  pool <- createPool (connectPostgreSQL "host=localhost dbname=postgres") close 1 60 10
 
   let
     jwtSettings_ :: JWTSettings
@@ -25,6 +28,7 @@ main = do
     env :: Env
     env = Env { jwtSettings    = jwtSettings_
               , cookieSettings = defaultCookieSettings
+              , pool
               }
 
     ctx :: Context ContextSet

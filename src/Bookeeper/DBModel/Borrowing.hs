@@ -16,8 +16,9 @@ import Data.Time
 import Data.Aeson.TH
 import Data.Profunctor.Product.TH
 
-import Bookeeper.DBModel.Entity
+import Bookeeper.Data
 import Bookeeper.Util
+import Bookeeper.DBModel.Entity
 
 
 data Borrowing' a b c d = Borrowing
@@ -26,7 +27,7 @@ data Borrowing' a b c d = Borrowing
   , date   :: c
   , status :: d
   }
-$(deriveJSON defaultOptions ''Borrowing')
+$(deriveJSON jsonOptions ''Borrowing')
 $(makeAdaptorAndInstanceInferrable' ''Borrowing')
 type Borrowing = Entity (Borrowing' Int64 Int64 UTCTime BorrowingStatus)
 type BorrowingR = EntityR ( Borrowing' (Field SqlInt8)

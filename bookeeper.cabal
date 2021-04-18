@@ -15,6 +15,8 @@ library
       Bookeeper.API
       Bookeeper.APIModel
       Bookeeper.AppM
+      Bookeeper.Data
+      Bookeeper.Data.SqlEnum
       Bookeeper.DBModel
       Bookeeper.DBModel.Admin
       Bookeeper.DBModel.Book
@@ -84,11 +86,11 @@ library
     , product-profunctors
     , profunctors
     , protolude
+    , resource-pool
     , servant-auth-server
     , servant-server
     , text
     , time
-    , vector
     , warp
   default-language: Haskell2010
 
@@ -154,10 +156,10 @@ executable bookeeper
     , product-profunctors
     , profunctors
     , protolude
+    , resource-pool
     , servant-auth-server
     , servant-server
     , text
     , time
-    , vector
     , warp
   default-language: Haskell2010

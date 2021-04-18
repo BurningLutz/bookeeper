@@ -15,30 +15,25 @@ import Opaleye
 import Data.Aeson.TH
 import Data.Profunctor.Product.TH
 
-import Bookeeper.DBModel.Entity
 import Bookeeper.Util
+import Bookeeper.DBModel.Entity
 
 
-data Admin' a b c = Admin
+data Admin' a b = Admin
   { nickname :: a
   , password :: b
-  , level    :: c
   }
-$(deriveJSON defaultOptions ''Admin')
+$(deriveJSON jsonOptions ''Admin')
 $(makeAdaptorAndInstanceInferrable' ''Admin')
-type Admin = Entity (Admin' Text Text AdminLevel)
-type AdminR = EntityR ( Admin' (Field SqlText)
-                               ()
-                               (Field AdminLevel)
-                     )
-type AdminW = EntityW ( Admin' (Field SqlText)
-                               (Field SqlText)
-                               (Field AdminLevel)
-                     )
+type Admin = Entity (Admin' Text Text)
+type AdminF = Admin' (Field SqlText)
+                     (Field SqlText)
+
+type AdminR = EntityR AdminF
+type AdminW = EntityW AdminF
 
 admins :: Table AdminW AdminR
 admins = table "admins" $ withEntity $ pAdmin Admin
   { nickname = tableField "nickname"
-  , password = writeOnlyTableField "password"
-  , level    = tableField "level"
+  , password = tableField "password"
   }
