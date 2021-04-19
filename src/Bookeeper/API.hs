@@ -11,9 +11,7 @@ import Protolude
 import Servant
 import Servant.Auth.Server
 
-import Bookeeper.Data
-import Bookeeper.DBModel
-import Bookeeper.APIModel
+import Bookeeper.Model
 
 
 type AllowUser  = Auth '[JWT] ClaimUser

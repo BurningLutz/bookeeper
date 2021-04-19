@@ -4,24 +4,22 @@ module Bookeeper.DBModel.Admin
   , AdminR
   , AdminW
   , pAdmin
-
-  , admins
   ) where
 
 
 import Protolude
 
-import Opaleye
 import Data.Aeson.TH
 import Data.Profunctor.Product.TH
+import Opaleye
 
 import Bookeeper.Util
 import Bookeeper.DBModel.Entity
 
 
 data Admin' a b = Admin
-  { nickname :: a
-  , password :: b
+  { _nickname :: a
+  , _password :: b
   }
 $(deriveJSON jsonOptions ''Admin')
 $(makeAdaptorAndInstanceInferrable' ''Admin')
@@ -31,9 +29,3 @@ type AdminF = Admin' (Field SqlText)
 
 type AdminR = EntityR AdminF
 type AdminW = EntityW AdminF
-
-admins :: Table AdminW AdminR
-admins = table "admins" $ withEntity $ pAdmin Admin
-  { nickname = tableField "nickname"
-  , password = tableField "password"
-  }

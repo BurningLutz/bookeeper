@@ -9,7 +9,7 @@ import Protolude hiding (Handler)
 import Servant
 import Control.Monad.RWS hiding (forM_)
 
-import Bookeeper.Data
+import Bookeeper.Model
 
 
 type AppM' = RWST Env [Text] () Handler

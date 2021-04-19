@@ -11,7 +11,7 @@ import Database.PostgreSQL.Simple (connectPostgreSQL, close)
 import Bookeeper.API
 import Bookeeper.AppM
 import Bookeeper.Server
-import Bookeeper.Data
+import Bookeeper.Model
 
 
 type ContextSet = '[CookieSettings, JWTSettings]

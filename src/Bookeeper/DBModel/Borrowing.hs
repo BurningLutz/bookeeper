@@ -4,28 +4,34 @@ module Bookeeper.DBModel.Borrowing
   , BorrowingR
   , BorrowingW
   , pBorrowing
-
-  , borrowings
   ) where
 
 
 import Protolude
 
-import Opaleye
 import Data.Time
 import Data.Aeson.TH
 import Data.Profunctor.Product.TH
+import Opaleye
 
-import Bookeeper.Data
+import Bookeeper.Data.SqlEnum
 import Bookeeper.Util
 import Bookeeper.DBModel.Entity
 
 
+data BorrowingStatus = Pending | Approved | Returned
+  deriving stock (Show, Read)
+$(deriveJSON jsonOptions ''BorrowingStatus)
+instance IsSqlEnum BorrowingStatus where
+  data SqlEnum BorrowingStatus
+  type SqlTypeName BorrowingStatus = "borrowing_status"
+
+
 data Borrowing' a b c d = Borrowing
-  { bookId :: a
-  , userId :: b
-  , date   :: c
-  , status :: d
+  { _bookId :: a
+  , _userId :: b
+  , _date   :: c
+  , _status :: d
   }
 $(deriveJSON jsonOptions ''Borrowing')
 $(makeAdaptorAndInstanceInferrable' ''Borrowing')
@@ -40,11 +46,3 @@ type BorrowingW = EntityW ( Borrowing' ()
                                        (Field SqlTimestamptz)
                                        (Field BorrowingStatus)
                           )
-
-borrowings :: Table BorrowingW BorrowingR
-borrowings = table "borrowings" $ withEntity $ pBorrowing Borrowing
-  { bookId = readOnlyTableField "book_id"
-  , userId = readOnlyTableField "user_id"
-  , date   = tableField "date"
-  , status = tableField "status"
-  }

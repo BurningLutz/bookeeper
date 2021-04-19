@@ -6,15 +6,15 @@ module Bookeeper.Server.User
 import Protolude
 
 import Data.Pool
+import Control.Lens
 import Opaleye
 import Servant
 import Servant.Auth.Server
 
 import Bookeeper.AppM
 import Bookeeper.API
-import Bookeeper.APIModel
-import Bookeeper.DBModel
-import Bookeeper.Data
+import Bookeeper.Model
+import Bookeeper.Query
 
 
 userServer :: ServerT UserAPI AppM
@@ -36,7 +36,7 @@ userServer = adminUserServer
           Env { pool } <- ask
 
           let
-            user = toFields $ wrapEntity User { nickname, age, isVip }
+            user = newEntity User { _nickname, _age, _isVip }
 
           liftIO $ withResource pool \conn -> do
             runInsert_ conn Insert
@@ -55,16 +55,29 @@ userServer = adminUserServer
           liftIO $ withResource pool \conn -> do
             runUpdate_ conn Update
               { uTable = users
-              , uWhere = \Entity { id } -> id .== toFields uid
-              , uUpdateWith = updEntity undefined
+              , uWhere = \u -> u^.id .== toFields uid
+              , uUpdateWith = modEntity ( (age .~ toFields _age)
+                                        . (isVip .~ toFields _isVip)
+                                        )
               , uReturning = rCount
               }
 
           pure NoContent
     adminUserServer _ = throwAll err401
 
-    currentUserServer (Authenticated _) = currentUser
+    currentUserServer (Authenticated ClaimUser {..}) = currentUser
       where
         currentUser :: AppM User
-        currentUser = undefined
+        currentUser = do
+          Env { pool } <- ask
+
+          mUser :: Maybe User <- liftIO $ withResource pool \conn -> do
+            listToMaybe <$> runSelect conn do
+              user <- selectTable users
+
+              viaLateral restrict (user^.value.nickname .== toFields _nickname)
+
+              pure user
+
+          mUser & maybe (throwError err401) pure
     currentUserServer _ = throwAll err401

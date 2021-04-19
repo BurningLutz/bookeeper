@@ -57,6 +57,7 @@ dependencies:
   - protolude
   - aeson
   - base64-bytestring
+  - lens
   - mtl
   - opaleye
   - postgresql-simple

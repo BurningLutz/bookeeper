@@ -4,25 +4,23 @@ module Bookeeper.DBModel.User
   , UserR
   , UserW
   , pUser
-
-  , users
   ) where
 
 
 import Protolude
 
-import Opaleye
 import Data.Aeson.TH
 import Data.Profunctor.Product.TH
+import Opaleye
 
-import Bookeeper.DBModel.Entity
 import Bookeeper.Util
+import Bookeeper.DBModel.Entity
 
 
 data User' a b c = User
-  { nickname :: a
-  , age      :: b
-  , isVip    :: c
+  { _nickname :: a
+  , _age      :: b
+  , _isVip    :: c
   }
 $(deriveJSON jsonOptions ''User')
 $(makeAdaptorAndInstanceInferrable' ''User')
@@ -32,10 +30,3 @@ type UserF =  User' (Field SqlText)
                     (Field SqlBool)
 type UserR = EntityR UserF
 type UserW = EntityW UserF
-
-users :: Table UserW UserR
-users = table "users" $ withEntity $ pUser User
-  { nickname = tableField "nickname"
-  , age      = tableField "age"
-  , isVip    = tableField "is_vip"
-  }
