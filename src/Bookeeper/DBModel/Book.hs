@@ -24,7 +24,7 @@ data Book' a b c = Book
   }
 $(deriveJSON jsonOptions ''Book')
 $(makeAdaptorAndInstanceInferrable' ''Book')
-type Book = Book' Text Text Text
+type Book = Entity (Book' Text Text Text)
 type BookF = Book' (Field SqlText)
                    (Field SqlText)
                    (Field SqlText)

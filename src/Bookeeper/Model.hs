@@ -12,7 +12,11 @@ module Bookeeper.Model
   , AdminLogin(..)
   , UserLogin(..)
   , AddUser(..)
-  , UpdUser(..)
+  , SetUser(..)
+  , AddBook(..)
+  , SetBook(..)
+  , AddBorrowing(..)
+  , SetBorrowing(..)
 
   , access_token
   , payload
@@ -27,10 +31,11 @@ module Bookeeper.Model
   , sn
   , title
   , author
-  , bookId
-  , userId
+  , book
+  , user
   , date
   , status
+  , bookId
   )
   where
 
@@ -69,17 +74,20 @@ newtype ClaimAdmin = ClaimAdmin
   { _nickname :: Text
   }
 $(makeFieldsNoPrefix ''ClaimAdmin)
-$(deriveJSON jsonOptions ''ClaimAdmin)
+-- its important to include the tag name here to differ from a ClaimUser
+$(deriveJSON (jsonOptions { tagSingleConstructors = True }) ''ClaimAdmin)
 deriving instance FromJWT ClaimAdmin
 deriving instance ToJWT   ClaimAdmin
 
 
 data ClaimUser = ClaimUser
-  { _nickname :: Text
+  { _id       :: Int64
+  , _nickname :: Text
   , _isVip    :: Bool
   }
 $(makeFieldsNoPrefix ''ClaimUser)
-$(deriveJSON jsonOptions ''ClaimUser)
+-- its important to include the tag name here to differ from a ClaimAdmin
+$(deriveJSON (jsonOptions { tagSingleConstructors = True }) ''ClaimUser)
 deriving instance FromJWT ClaimUser
 deriving instance ToJWT   ClaimUser
 
@@ -113,9 +121,36 @@ data AddUser = AddUser
 $(makeFieldsNoPrefix ''AddUser)
 $(deriveJSON jsonOptions ''AddUser)
 
-data UpdUser = UpdUser
+data SetUser = SetUser
   { _isVip :: Bool
   , _age   :: Maybe Int32
   }
-$(makeFieldsNoPrefix ''UpdUser)
-$(deriveJSON jsonOptions ''UpdUser)
+$(makeFieldsNoPrefix ''SetUser)
+$(deriveJSON jsonOptions ''SetUser)
+
+data AddBook = AddBook
+  { _sn     :: Text
+  , _title  :: Text
+  , _author :: Text
+  }
+$(makeFieldsNoPrefix ''AddBook)
+$(deriveJSON jsonOptions ''AddBook)
+
+data SetBook = SetBook
+  { _title  :: Text
+  , _author :: Text
+  }
+$(makeFieldsNoPrefix ''SetBook)
+$(deriveJSON jsonOptions ''SetBook)
+
+newtype AddBorrowing = AddBorrowing
+  { _bookId :: Int64
+  }
+$(makeFieldsNoPrefix ''AddBorrowing)
+$(deriveJSON jsonOptions ''AddBorrowing)
+
+newtype SetBorrowing = SetBorrowing
+  { _status :: BorrowingStatus
+  }
+$(makeFieldsNoPrefix ''SetBorrowing)
+$(deriveJSON jsonOptions ''SetBorrowing)

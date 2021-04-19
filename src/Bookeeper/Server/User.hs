@@ -23,7 +23,7 @@ userServer = adminUserServer
         :<|> currentUserServer
 
   where
-    adminUserServer (Authenticated _) = getUsers :<|> addUser :<|> updUser
+    adminUserServer (Authenticated ClaimAdmin {}) = getUsers :<|> addUser :<|> setUser
       where
         getUsers :: AppM [User]
         getUsers = do
@@ -37,21 +37,21 @@ userServer = adminUserServer
           Env { pool } <- ask
 
           let
-            user = newEntity User { _nickname, _age, _isVip }
+            newUser = newEntity User { _nickname, _age, _isVip }
 
           ei <- liftIO $ withResource pool \conn -> do
             catchViolation (uniqError "users_nickname_key") do
               Right <$> runInsert_ conn Insert
                 { iTable = users
-                , iRows = [user]
+                , iRows = [newUser]
                 , iReturning = rCount
                 , iOnConflict = Nothing
                 }
 
           ei & either throwError (const $ pure NoContent)
 
-        updUser :: Int64 -> UpdUser -> AppM NoContent
-        updUser uid UpdUser {..} = do
+        setUser :: Int64 -> SetUser -> AppM NoContent
+        setUser uid SetUser {..} = do
           Env { pool } <- ask
 
           n <- liftIO $ withResource pool \conn -> do
@@ -78,11 +78,11 @@ userServer = adminUserServer
 
           mUser :: Maybe User <- liftIO $ withResource pool \conn -> do
             listToMaybe <$> runSelect conn do
-              user <- selectTable users
+              userR <- selectTable users
 
-              viaLateral restrict (user^.value.nickname .== toFields _nickname)
+              viaLateral restrict (userR^.value.nickname .== toFields _nickname)
 
-              pure user
+              pure userR
 
           mUser & maybe (throwError err401) pure
     currentUserServer _ = throwAll err401

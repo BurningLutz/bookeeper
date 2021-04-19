@@ -3,6 +3,8 @@ module Bookeeper.Query
   , newEntity
   , modEntity
   , uniqError
+  , fkeyError
+
   , admins
   , users
   , books
@@ -14,6 +16,7 @@ import Protolude
 
 import Data.Time
 import Data.Profunctor.Product.Default
+import Control.Lens
 import Servant
 import Opaleye
 import Database.PostgreSQL.Simple
@@ -24,31 +27,33 @@ import Bookeeper.Model
 
 withEntity :: TableFields w r -> TableFields (EntityW w) (EntityR r)
 withEntity _value = pEntity $ Entity
-  { _id        = readOnlyTableField "id"
-  , _createdAt = readOnlyTableField "created_at"
+  { _id        = tableField "id"
+  , _createdAt = tableField "created_at"
   , _updatedAt = tableField "updated_at"
   , _value
   }
 
 newEntity :: Default ToFields entity entityW => entity -> EntityW entityW
 newEntity _value = toFields Entity
-  { _id = ()
-  , _createdAt = ()
+  { _id = Nothing @Int64
+  , _createdAt = Nothing @UTCTime
   , _updatedAt = Nothing @UTCTime
   , _value
   }
 
-modEntity :: (entityR -> entityW) -> EntityR entityR -> EntityW entityW
-modEntity conv entity@Entity { _value } = entity
-  { _id = ()
-  , _createdAt = ()
-  , _updatedAt = Nothing
-  , _value = conv _value
+modEntity :: Default Updater entityR entityW
+          => (entityR -> entityR) -> EntityR entityR -> EntityW entityW
+modEntity conv = updateEasy \entity -> entity
+  { _value = conv (entity^.value)
   }
 
 uniqError :: ByteString -> SqlError -> ConstraintViolation -> IO (Either ServerError a)
 uniqError s0 _ (UniqueViolation s1) | s0 == s1 = pure $ Left err409 { errBody = "already exists" }
 uniqError _  e _                               = throwIO e
+
+fkeyError :: ByteString -> SqlError -> ConstraintViolation -> IO (Either ServerError a)
+fkeyError s0 _ (ForeignKeyViolation _ s1) | s0 == s1 = pure $ Left err412
+fkeyError _  e _                                     = throwIO e
 
 admins :: Table AdminW AdminR
 admins = table "admins" $ withEntity $ pAdmin Admin
@@ -67,13 +72,13 @@ books :: Table BookW BookR
 books = table "books" $ withEntity $ pBook Book
   { _sn     = tableField "sn"
   , _title  = tableField "title"
-  , _author = tableField "authur"
+  , _author = tableField "author"
   }
 
 borrowings :: Table BorrowingW BorrowingR
 borrowings = table "borrowings" $ withEntity $ pBorrowing Borrowing
-  { _bookId = readOnlyTableField "book_id"
-  , _userId = readOnlyTableField "user_id"
+  { _book   = tableField "book_id"
+  , _user   = tableField "user_id"
   , _date   = tableField "date"
   , _status = tableField "status"
   }

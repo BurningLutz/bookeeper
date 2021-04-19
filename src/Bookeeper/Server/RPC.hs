@@ -59,17 +59,21 @@ rpcServer = adminLogin
 
       mUser :: Maybe User <- liftIO $ withResource pool \conn -> do
         listToMaybe <$> runSelect conn do
-          user <- selectTable users
+          userR <- selectTable users
 
-          viaLateral restrict (user^.value.nickname .== toFields _nickname)
+          viaLateral restrict (userR^.value.nickname .== toFields _nickname)
 
-          pure user
+          pure userR
 
-      mUser & maybe (throwError err401) \user -> do
+      mUser & maybe (throwError err401) \userR -> do
         now <- liftIO getCurrentTime
 
         let
-          claimUser = ClaimUser { _nickname, _isVip = user^.value.isVip }
+          claimUser = ClaimUser
+            { _nickname
+            , _isVip = userR^.value.isVip
+            , _id    = userR^.id
+            }
           expiresAt = addUTCTime (7 * nominalDay) now
 
         eiJwt <- liftIO $ makeJWT claimUser jwtSettings (Just expiresAt)

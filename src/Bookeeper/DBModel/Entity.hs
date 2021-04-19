@@ -30,7 +30,7 @@ type EntityR a = Entity' (Field SqlInt8)
                          (Field SqlTimestamptz)
                          (Field SqlTimestamptz)
                          a
-type EntityW a = Entity' ()
-                         ()
+type EntityW a = Entity' (Maybe (Field SqlInt8))
+                         (Maybe (Field SqlTimestamptz))
                          (Maybe (Field SqlTimestamptz))
                          a

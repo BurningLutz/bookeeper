@@ -23,6 +23,8 @@ library
       Bookeeper.Model
       Bookeeper.Query
       Bookeeper.Server
+      Bookeeper.Server.Book
+      Bookeeper.Server.Borrowing
       Bookeeper.Server.RPC
       Bookeeper.Server.User
       Bookeeper.Util
