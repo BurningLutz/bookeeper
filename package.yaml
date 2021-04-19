@@ -68,6 +68,7 @@ dependencies:
   - servant-server
   - text
   - time
+  - wai-logger
   - warp
 
 library:

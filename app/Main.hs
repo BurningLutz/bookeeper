@@ -6,6 +6,7 @@ import Data.Pool
 import qualified Data.ByteString.Base64 as B64
 import Servant
 import Servant.Auth.Server
+import Network.Wai.Logger
 import Network.Wai.Handler.Warp
 import Database.PostgreSQL.Simple (connectPostgreSQL, close)
 
@@ -54,4 +55,8 @@ main = do
             ctx
             appServer
 
-  run 8081 app
+  withStdoutLogger \logger -> do
+    let
+      settings = setPort 8081 $ setLogger logger defaultSettings
+
+    runSettings settings app
