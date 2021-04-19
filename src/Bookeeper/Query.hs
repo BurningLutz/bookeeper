@@ -2,6 +2,7 @@ module Bookeeper.Query
   ( withEntity
   , newEntity
   , modEntity
+  , uniqError
   , admins
   , users
   , books
@@ -13,7 +14,10 @@ import Protolude
 
 import Data.Time
 import Data.Profunctor.Product.Default
+import Servant
 import Opaleye
+import Database.PostgreSQL.Simple
+import Database.PostgreSQL.Simple.Errors
 
 import Bookeeper.Model
 
@@ -34,13 +38,17 @@ newEntity _value = toFields Entity
   , _value
   }
 
-modEntity :: (entity -> entity) -> EntityR entity -> EntityW entity
+modEntity :: (entityR -> entityW) -> EntityR entityR -> EntityW entityW
 modEntity conv entity@Entity { _value } = entity
   { _id = ()
   , _createdAt = ()
   , _updatedAt = Nothing
   , _value = conv _value
   }
+
+uniqError :: ByteString -> SqlError -> ConstraintViolation -> IO (Either ServerError a)
+uniqError s0 _ (UniqueViolation s1) | s0 == s1 = pure $ Left err409 { errBody = "already exists" }
+uniqError _  e _                               = throwIO e
 
 admins :: Table AdminW AdminR
 admins = table "admins" $ withEntity $ pAdmin Admin

@@ -99,24 +99,23 @@ data AdminLogin = AdminLogin
 $(makeFieldsNoPrefix ''AdminLogin)
 $(deriveJSON jsonOptions ''AdminLogin)
 
-data UserLogin = UserLogin
+newtype UserLogin = UserLogin
   { _nickname :: Text
-  , _password :: Text
   }
 $(makeFieldsNoPrefix ''UserLogin)
 $(deriveJSON jsonOptions ''UserLogin)
 
 data AddUser = AddUser
   { _nickname :: Text
-  , _age      :: Int32
   , _isVip    :: Bool
+  , _age      :: Maybe Int32
   }
 $(makeFieldsNoPrefix ''AddUser)
 $(deriveJSON jsonOptions ''AddUser)
 
 data UpdUser = UpdUser
-  { _age   :: Int32
-  , _isVip :: Bool
+  { _isVip :: Bool
+  , _age   :: Maybe Int32
   }
 $(makeFieldsNoPrefix ''UpdUser)
 $(deriveJSON jsonOptions ''UpdUser)

@@ -7,9 +7,9 @@ module Bookeeper.Util
 import Protolude
 import Prelude (String)
 
-import Opaleye
 import Data.Aeson.TH
 import Data.Profunctor
+import Opaleye
 
 
 jsonOptions :: Options

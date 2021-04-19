@@ -3,7 +3,6 @@ module Bookeeper.Server
   ) where
 
 
-import Protolude
 import Servant
 
 import Bookeeper.API

@@ -56,7 +56,7 @@ create table users (
   like base including all,
 
   nickname varchar(20) not null unique,
-  isVip    bool        not null,
+  is_vip   bool        not null,
   age      int4
 );
 

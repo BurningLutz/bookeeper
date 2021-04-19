@@ -10,6 +10,7 @@ import Control.Lens
 import Opaleye
 import Servant
 import Servant.Auth.Server
+import Database.PostgreSQL.Simple.Errors
 
 import Bookeeper.AppM
 import Bookeeper.API
@@ -38,21 +39,22 @@ userServer = adminUserServer
           let
             user = newEntity User { _nickname, _age, _isVip }
 
-          liftIO $ withResource pool \conn -> do
-            runInsert_ conn Insert
-              { iTable = users
-              , iRows = [user]
-              , iReturning = rCount
-              , iOnConflict = Nothing
-              }
+          ei <- liftIO $ withResource pool \conn -> do
+            catchViolation (uniqError "users_nickname_key") do
+              Right <$> runInsert_ conn Insert
+                { iTable = users
+                , iRows = [user]
+                , iReturning = rCount
+                , iOnConflict = Nothing
+                }
 
-          pure NoContent
+          ei & either throwError (const $ pure NoContent)
 
         updUser :: Int64 -> UpdUser -> AppM NoContent
         updUser uid UpdUser {..} = do
           Env { pool } <- ask
 
-          liftIO $ withResource pool \conn -> do
+          n <- liftIO $ withResource pool \conn -> do
             runUpdate_ conn Update
               { uTable = users
               , uWhere = \u -> u^.id .== toFields uid
@@ -62,7 +64,10 @@ userServer = adminUserServer
               , uReturning = rCount
               }
 
-          pure NoContent
+          if n > 0
+             then pure NoContent
+             else throwError err404
+
     adminUserServer _ = throwAll err401
 
     currentUserServer (Authenticated ClaimUser {..}) = currentUser

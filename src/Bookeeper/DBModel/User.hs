@@ -19,14 +19,14 @@ import Bookeeper.DBModel.Entity
 
 data User' a b c = User
   { _nickname :: a
-  , _age      :: b
-  , _isVip    :: c
+  , _isVip    :: b
+  , _age      :: c
   }
 $(deriveJSON jsonOptions ''User')
 $(makeAdaptorAndInstanceInferrable' ''User')
-type User = Entity (User' Text Int32 Bool)
+type User = Entity (User' Text Bool (Maybe Int32))
 type UserF =  User' (Field SqlText)
-                    (Field SqlInt4)
                     (Field SqlBool)
+                    (FieldNullable SqlInt4)
 type UserR = EntityR UserF
 type UserW = EntityW UserF
