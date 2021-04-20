@@ -10,11 +10,10 @@ module Bookeeper.DBModel.Entity
 import Protolude
 
 import Data.Time.Clock
-import Data.Aeson.TH
+import Data.Aeson
+import Data.HashMap.Strict
 import Data.Profunctor.Product.TH
 import Opaleye
-
-import Bookeeper.Util
 
 
 data Entity' a b c d = Entity
@@ -23,7 +22,14 @@ data Entity' a b c d = Entity
   , _updatedAt :: c
   , _value     :: d
   }
-$(deriveJSON jsonOptions ''Entity')
+instance (ToJSON a, ToJSON d) => ToJSON (Entity' a b c d) where
+  toJSON Entity {..} =
+    let val = toJSON _value
+        id  = toJSON _id
+     in case val of
+          Object obj -> Object $ insert "id" id obj
+          _          -> object [("id", id), ("value", val)]
+
 $(makeAdaptorAndInstanceInferrable' ''Entity')
 type Entity a = Entity' Int64 UTCTime UTCTime a
 type EntityR a = Entity' (Field SqlInt8)

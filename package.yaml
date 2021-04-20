@@ -68,6 +68,7 @@ dependencies:
   - servant-server
   - text
   - time
+  - unordered-containers
   - wai-logger
   - warp
 
