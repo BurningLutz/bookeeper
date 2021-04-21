@@ -26,49 +26,64 @@ type FullAPI = "users"      :> UserAPI
 
 
 type UserAPI = AllowAdmin :> AdminUserAPI
-          :<|> AllowUser :> CurrentUserAPI
+          :<|> AllowUser  :> CurrentUserAPI
 
-type AdminUserAPI = Get '[JSON] [User]
-               :<|> ReqBody '[JSON] AddUser
+type AdminUserAPI = Summary "Get All Users"
+                      :> Get '[JSON] [User]
+               :<|> Summary "Add a User"
+                      :> ReqBody '[JSON] AddUser
                       :> Verb 'POST 204 '[JSON] NoContent
-               :<|> Capture "id" Int64
+               :<|> Summary "Update a User"
+                      :> Capture "id" Int64
                       :> ReqBody '[JSON] SetUser
                       :> Verb 'PUT 204 '[JSON] NoContent
 
-type CurrentUserAPI = "me" :> Get '[JSON] User
+type CurrentUserAPI = Summary "Get Current User"
+                        :> "me"
+                        :> Get '[JSON] User
 
 
 type BookAPI = AllowAdmin :> AdminBookAPI
           :<|> PublicBookAPI
 
-type AdminBookAPI = ReqBody '[JSON] AddBook
+type AdminBookAPI = Summary "Add a Book"
+                      :> ReqBody '[JSON] AddBook
                       :> PostCreated '[JSON] Int64
-               :<|> Capture "id" Int64
+               :<|> Summary "Update a Book"
+                      :> Capture "id" Int64
                       :> ReqBody '[JSON] SetBook
                       :> Verb 'PUT 204 '[JSON] NoContent
-               :<|> Capture "id" Int64
+               :<|> Summary "Delete a Book"
+                      :> Capture "id" Int64
                       :> Verb 'DELETE 204 '[JSON] NoContent
 
-type PublicBookAPI = Get '[JSON] [Book]
+type PublicBookAPI = Summary "Get All Books"
+                       :> Get '[JSON] [Book]
 
 
 type BorrowingAPI = AllowAdmin :> AdminBorrowingAPI
                :<|> AllowUser :> UserBorrowingAPI
 
-type AdminBorrowingAPI = Get '[JSON] [BorrowingDetail]
-                    :<|> Capture "id" Int64
+type AdminBorrowingAPI = Summary "Get All Borrowing Details"
+                           :> Get '[JSON] [BorrowingDetail]
+                    :<|> Summary "Update a Borrowing"
+                           :> Capture "id" Int64
                            :> ReqBody '[JSON] SetBorrowing
                            :> Verb 'PUT 204 '[JSON] NoContent
 
-type UserBorrowingAPI = ReqBody '[JSON] AddBorrowing
+type UserBorrowingAPI = Summary "Borrow a Book"
+                          :> ReqBody '[JSON] AddBorrowing
                           :> PostCreated '[JSON] Int64
-                    :<|> "me"
+                    :<|> Summary "Get All My Borrowed Books"
+                          :> "me"
                           :> Get '[JSON] [Borrowing]
 
 
-type RPCAPI = "admin-login"
+type RPCAPI = Summary "Admin Login"
+                 :> "admin-login"
                  :> ReqBody '[JSON] AdminLogin
                  :> Post '[JSON] (WithAccessToken ClaimAdmin)
-         :<|> "user-login"
+         :<|> Summary "User Login"
+                 :> "user-login"
                  :> ReqBody '[JSON] UserLogin
                  :> Post '[JSON] (WithAccessToken ClaimUser)
