@@ -90,7 +90,11 @@ library
     , protolude
     , resource-pool
     , servant-auth-server
+    , servant-auth-swagger
     , servant-server
+    , servant-swagger
+    , servant-swagger-ui-redoc
+    , swagger2
     , text
     , time
     , unordered-containers
@@ -100,8 +104,6 @@ library
 
 executable bookeeper
   main-is: Main.hs
-  other-modules:
-      Paths_bookeeper
   hs-source-dirs:
       ./app
   default-extensions:
@@ -163,7 +165,86 @@ executable bookeeper
     , protolude
     , resource-pool
     , servant-auth-server
+    , servant-auth-swagger
     , servant-server
+    , servant-swagger
+    , servant-swagger-ui-redoc
+    , swagger2
+    , text
+    , time
+    , unordered-containers
+    , wai-logger
+    , warp
+  default-language: Haskell2010
+
+executable bookeeper-swagger
+  main-is: SwaggerMain.hs
+  hs-source-dirs:
+      ./app
+  default-extensions:
+      AllowAmbiguousTypes
+      ApplicativeDo
+      BangPatterns
+      BlockArguments
+      ConstraintKinds
+      DataKinds
+      DeriveAnyClass
+      DeriveFunctor
+      DeriveGeneric
+      DerivingStrategies
+      DerivingVia
+      DuplicateRecordFields
+      ExplicitForAll
+      FlexibleContexts
+      FlexibleInstances
+      FunctionalDependencies
+      GADTs
+      InstanceSigs
+      KindSignatures
+      LambdaCase
+      LiberalTypeSynonyms
+      MonoLocalBinds
+      MultiParamTypeClasses
+      NamedFieldPuns
+      NamedWildCards
+      NoImplicitPrelude
+      NumericUnderscores
+      OverloadedStrings
+      PartialTypeSignatures
+      PolyKinds
+      QuasiQuotes
+      RecordWildCards
+      RankNTypes
+      ScopedTypeVariables
+      StandaloneDeriving
+      TemplateHaskell
+      TypeApplications
+      TypeFamilies
+      TypeOperators
+      TypeSynonymInstances
+      UndecidableInstances
+      UndecidableSuperClasses
+  ghc-options: -Wall -Wno-type-defaults
+  ghc-prof-options: -fprof-auto-calls
+  build-depends:
+      aeson
+    , base >=4.9 && <5
+    , base64-bytestring
+    , bookeeper
+    , lens
+    , mtl
+    , opaleye
+    , postgresql-simple
+    , product-profunctors
+    , profunctors
+    , protolude
+    , resource-pool
+    , servant-auth-server
+    , servant-auth-swagger
+    , servant-server
+    , servant-swagger
+    , servant-swagger-ui-redoc
+    , swagger2
     , text
     , time
     , unordered-containers

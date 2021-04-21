@@ -57,6 +57,6 @@ main = do
 
   withStdoutLogger \logger -> do
     let
-      settings = setPort 8081 $ setLogger logger defaultSettings
+      settings = setPort 8080 $ setLogger logger defaultSettings
 
     runSettings settings app

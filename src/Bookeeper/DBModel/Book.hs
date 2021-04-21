@@ -9,6 +9,7 @@ module Bookeeper.DBModel.Book
 
 import Protolude
 
+import Data.Swagger
 import Data.Aeson.TH
 import Data.Profunctor.Product.TH
 import Opaleye
@@ -22,9 +23,13 @@ data Book' a b c = Book
   , _title  :: b
   , _author :: c
   }
+  deriving stock (Generic)
 $(deriveJSON jsonOptions ''Book')
 $(makeAdaptorAndInstanceInferrable' ''Book')
-type Book = Entity (Book' Text Text Text)
+type BookE = Book' Text Text Text
+instance ToSchema BookE
+
+type Book  = Entity BookE
 type BookF = Book' (Field SqlText)
                    (Field SqlText)
                    (Field SqlText)

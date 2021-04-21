@@ -12,6 +12,7 @@ module Bookeeper.DBModel.Borrowing
 import Protolude
 
 import Data.Time
+import Data.Swagger
 import Data.Aeson.TH
 import Data.Profunctor.Product.TH
 import Opaleye
@@ -24,11 +25,12 @@ import Bookeeper.DBModel.User
 
 
 data BorrowingStatus = Pending | Approved | Returned
-  deriving stock (Show, Read)
+  deriving stock (Show, Read, Generic)
 $(deriveJSON jsonOptions ''BorrowingStatus)
 instance IsSqlEnum BorrowingStatus where
   data SqlEnum BorrowingStatus
   type SqlTypeName BorrowingStatus = "borrowing_status"
+instance ToSchema BorrowingStatus
 
 
 data Borrowing' a b c d = Borrowing
@@ -37,10 +39,16 @@ data Borrowing' a b c d = Borrowing
   , _date   :: c
   , _status :: d
   }
+  deriving stock (Generic)
 $(deriveJSON jsonOptions ''Borrowing')
 $(makeAdaptorAndInstanceInferrable' ''Borrowing')
-type Borrowing = Entity (Borrowing' Int64 Int64 UTCTime BorrowingStatus)
-type BorrowingDetail = Entity (Borrowing' Book User UTCTime BorrowingStatus)
+type BorrowingE = Borrowing' Int64 Int64 UTCTime BorrowingStatus
+instance ToSchema BorrowingE
+type BorrowingDetailE = Borrowing' Book User UTCTime BorrowingStatus
+instance ToSchema BorrowingDetailE
+
+type Borrowing = Entity BorrowingE
+type BorrowingDetail = Entity BorrowingDetailE
 type BorrowingR = EntityR ( Borrowing' (Field SqlInt8)
                                        (Field SqlInt8)
                                        (Field SqlTimestamptz)

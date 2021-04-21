@@ -55,22 +55,26 @@ default-extensions:
 dependencies:
   - base >= 4.9 && < 5
   - protolude
-  - aeson
-  - base64-bytestring
-  - lens
-  - mtl
-  - opaleye
-  - postgresql-simple
-  - product-profunctors
-  - profunctors
-  - resource-pool
-  - servant-auth-server
-  - servant-server
   - text
+  - base64-bytestring
   - time
+  - aeson
+  - lens
   - unordered-containers
-  - wai-logger
+  - resource-pool
+  - postgresql-simple
+  - opaleye
+  - profunctors
+  - product-profunctors
+  - servant-server
+  - servant-auth-server
+  - swagger2
+  - servant-swagger
+  - servant-swagger-ui-redoc
+  - servant-auth-swagger
   - warp
+  - wai-logger
+  - mtl
 
 library:
   source-dirs: ./src
@@ -81,5 +85,12 @@ executables:
       - -threaded
     main: Main.hs
     source-dirs: ./app
+    other-modules: []
+    dependencies:
+      - bookeeper
+  bookeeper-swagger:
+    main: SwaggerMain.hs
+    source-dirs: ./app
+    other-modules: []
     dependencies:
       - bookeeper

@@ -10,6 +10,7 @@ module Bookeeper.DBModel.Entity
 import Protolude
 
 import Data.Time.Clock
+import Data.Swagger
 import Data.Aeson
 import Data.HashMap.Strict
 import Data.Profunctor.Product.TH
@@ -22,6 +23,7 @@ data Entity' a b c d = Entity
   , _updatedAt :: c
   , _value     :: d
   }
+  deriving stock (Generic)
 instance (ToJSON a, ToJSON d) => ToJSON (Entity' a b c d) where
   toJSON Entity {..} =
     let val = toJSON _value
@@ -31,7 +33,10 @@ instance (ToJSON a, ToJSON d) => ToJSON (Entity' a b c d) where
           _          -> object [("id", id), ("value", val)]
 
 $(makeAdaptorAndInstanceInferrable' ''Entity')
+
 type Entity a = Entity' Int64 UTCTime UTCTime a
+instance ToSchema a => ToSchema (Entity a)
+
 type EntityR a = Entity' (Field SqlInt8)
                          (Field SqlTimestamptz)
                          (Field SqlTimestamptz)

@@ -9,6 +9,7 @@ module Bookeeper.DBModel.User
 
 import Protolude
 
+import Data.Swagger
 import Data.Aeson.TH
 import Data.Profunctor.Product.TH
 import Opaleye
@@ -22,9 +23,13 @@ data User' a b c = User
   , _isVip    :: b
   , _age      :: c
   }
+  deriving stock (Generic)
 $(deriveJSON jsonOptions ''User')
 $(makeAdaptorAndInstanceInferrable' ''User')
-type User = Entity (User' Text Bool (Maybe Int32))
+type UserE = User' Text Bool (Maybe Int32)
+instance ToSchema UserE
+
+type User  = Entity UserE
 type UserF =  User' (Field SqlText)
                     (Field SqlBool)
                     (FieldNullable SqlInt4)
