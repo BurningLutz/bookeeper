@@ -59,6 +59,7 @@ dependencies:
   - base64-bytestring
   - time
   - aeson
+  - yaml
   - lens
   - unordered-containers
   - resource-pool

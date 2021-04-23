@@ -2,8 +2,12 @@ module Main where
 
 
 import Protolude
+
 import Data.Pool
+import Data.Yaml
+import qualified Data.Text as T
 import qualified Data.ByteString.Base64 as B64
+import Control.Monad.Except (liftEither)
 import Servant
 import Servant.Auth.Server
 import Network.Wai.Handler.Warp
@@ -18,38 +22,60 @@ import Bookeeper.Model
 
 type ContextSet = '[CookieSettings, JWTSettings]
 
-secret :: ByteString
-secret = "1mV2A3jU+lmNHtIjKWj5kinJi3Y4qEAZTmj7aGGXRNc04JtH5icto4rCqIKAAVNpmRUup/7jKCjZzsk2faPgXKtHG4hrMLN8rRXYUo+VgKbo/y1NonlUVtYCtfcCfprwjX9TR/hDIUh+WTdNPMJoXcewt5dJ0Fh6yoVPL2Am05NeLmS+Gz2NYle6zgso5IoIhkkmL0Iha4wLXevQdyr0JZaQhPJpzSB8eolOb/E0IsHvxYzdod93ZHzeN9RY7LixGHWyv9QW5koQqn9xl8izcfKRnbMbw4demqwiHs4BZ2BxN94y8AjHEZo/6UfKbLDtdbBrmiDK25MxsU6lXt7XJg=="
-
 main :: IO ()
 main = do
-  pool <- createPool (connectPostgreSQL "host=localhost dbname=postgres") close 1 60 10
+  args <- getArgs
 
-  let key          = fromSecret $ B64.decodeLenient secret
-      jwtSettings_ = defaultJWTSettings key
+  ei <- runExceptT do
+    cfgPath <- liftEither $ head args & maybeToRight do
+                 putText "ERROR: config file not provided."
+                 putText ""
+                 putText "Generated jwt secret is:"
+                 putText ""
 
-      env = Env
-        { jwtSettings    = jwtSettings_
-        , cookieSettings = defaultCookieSettings
-        , pool
-        }
+                 putStrLn . B64.encode =<< generateSecret
 
-      ctx :: Context ContextSet
-      ctx = defaultCookieSettings
-         :. jwtSettings_
-         :. EmptyContext
+    decodeFileThrow cfgPath
 
-      appServer :: Server FullAPI
-      appServer = hoistServerWithContext
-        (Proxy @FullAPI)
-        (Proxy @ContextSet)
-        (runAppM env)
-        server
+  ei & either identity runApp
 
-      app :: Application
-      app = serveWithContext
-        (Proxy @FullAPI)
-        ctx
-        appServer
+  where
+    runApp :: AppConfig -> IO ()
+    runApp AppConfig {..} = do
+      let connStr = [ maybe "" ("host=" <>)   dbHost
+                    , maybe "" ("dbname=" <>) dbName
+                    , maybe "" ("username=" <>) dbUser
+                    ]
+                  & T.intercalate " "
+                  & encodeUtf8
 
-  run 8080 (logStdout app)
+      pool <- createPool (connectPostgreSQL connStr) close 1 60 dbPoolMaxConns
+
+      let key          = fromSecret $ B64.decodeLenient (encodeUtf8 jwtSecret)
+          jwtSettings_ = defaultJWTSettings key
+
+          env = Env
+            { jwtSettings    = jwtSettings_
+            , cookieSettings = defaultCookieSettings
+            , pool
+            }
+
+          ctx :: Context ContextSet
+          ctx = defaultCookieSettings
+             :. jwtSettings_
+             :. EmptyContext
+
+          appServer :: Server FullAPI
+          appServer = hoistServerWithContext
+            (Proxy @FullAPI)
+            (Proxy @ContextSet)
+            (runAppM env)
+            server
+
+          app :: Application
+          app = serveWithContext
+            (Proxy @FullAPI)
+            ctx
+            appServer
+
+      run port (logStdout app)

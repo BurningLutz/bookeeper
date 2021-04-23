@@ -4,6 +4,7 @@ module Bookeeper.Model
   , module Bookeeper.DBModel.User
   , module Bookeeper.DBModel.Book
   , module Bookeeper.DBModel.Borrowing
+  , AppConfig(..)
   , Env(..)
   , ClaimAdmin(..)
   , ClaimUser(..)
@@ -62,6 +63,18 @@ $(makeFieldsNoPrefix ''Admin')
 $(makeFieldsNoPrefix ''User')
 $(makeFieldsNoPrefix ''Book')
 $(makeFieldsNoPrefix ''Borrowing')
+
+
+data AppConfig = AppConfig
+  { jwtSecret :: Text
+  , port :: Int
+
+  , dbHost :: Maybe Text
+  , dbName :: Maybe Text
+  , dbUser :: Maybe Text
+  , dbPoolMaxConns :: Int
+  }
+$(deriveJSON jsonOptions ''AppConfig)
 
 
 data Env = Env
