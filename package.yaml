@@ -73,7 +73,7 @@ dependencies:
   - servant-swagger-ui-redoc
   - servant-auth-swagger
   - warp
-  - wai-logger
+  - wai-extra
   - mtl
 
 library:

@@ -6,8 +6,8 @@ import Data.Pool
 import qualified Data.ByteString.Base64 as B64
 import Servant
 import Servant.Auth.Server
-import Network.Wai.Logger
 import Network.Wai.Handler.Warp
+import Network.Wai.Middleware.RequestLogger
 import Database.PostgreSQL.Simple (connectPostgreSQL, close)
 
 import Bookeeper.API
@@ -25,38 +25,31 @@ main :: IO ()
 main = do
   pool <- createPool (connectPostgreSQL "host=localhost dbname=postgres") close 1 60 10
 
-  let
-    key = fromSecret $ B64.decodeLenient secret
+  let key          = fromSecret $ B64.decodeLenient secret
+      jwtSettings_ = defaultJWTSettings key
 
-    jwtSettings_ :: JWTSettings
-    jwtSettings_ = defaultJWTSettings key
+      env = Env
+        { jwtSettings    = jwtSettings_
+        , cookieSettings = defaultCookieSettings
+        , pool
+        }
 
-    env :: Env
-    env = Env { jwtSettings    = jwtSettings_
-              , cookieSettings = defaultCookieSettings
-              , pool
-              }
+      ctx :: Context ContextSet
+      ctx = defaultCookieSettings
+         :. jwtSettings_
+         :. EmptyContext
 
-    ctx :: Context ContextSet
-    ctx = defaultCookieSettings
-       :. jwtSettings_
-       :. EmptyContext
+      appServer :: Server FullAPI
+      appServer = hoistServerWithContext
+        (Proxy @FullAPI)
+        (Proxy @ContextSet)
+        (runAppM env)
+        server
 
-    appServer :: Server FullAPI
-    appServer = hoistServerWithContext
-                  (Proxy @FullAPI)
-                  (Proxy @ContextSet)
-                  (runAppM env)
-                  server
+      app :: Application
+      app = serveWithContext
+        (Proxy @FullAPI)
+        ctx
+        appServer
 
-    app :: Application
-    app = serveWithContext
-            (Proxy @FullAPI)
-            ctx
-            appServer
-
-  withStdoutLogger \logger -> do
-    let
-      settings = setPort 8080 $ setLogger logger defaultSettings
-
-    runSettings settings app
+  run 8080 (logStdout app)
